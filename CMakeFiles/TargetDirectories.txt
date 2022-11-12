@@ -1,0 +1,6 @@
+/home/krists/Documents/git/face-detector-loopback/CMakeFiles/OpenCVTest.dir
+/home/krists/Documents/git/face-detector-loopback/CMakeFiles/FaceTest.dir
+/home/krists/Documents/git/face-detector-loopback/CMakeFiles/LoopbackCameraTest.dir
+/home/krists/Documents/git/face-detector-loopback/CMakeFiles/FaceDetectorLoopback.dir
+/home/krists/Documents/git/face-detector-loopback/CMakeFiles/edit_cache.dir
+/home/krists/Documents/git/face-detector-loopback/CMakeFiles/rebuild_cache.dir
