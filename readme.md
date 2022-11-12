@@ -46,8 +46,9 @@ Build
 Executables
 
 * **OpenCVTest** - Minimal code to test if OpenCV capture device is up and running
-* **FaceTest** - Minimal code to test OpenCV face detection
+* **FaceTest** - Minimal code to test OpenCV face detection with various algorithms
 * **LoopbackCameraTest** - Test to feed captured video data into the virtual video device
+* **FaceDetectorLoopback** - Full face detection with streaming to loopback device
 
 ## Useful tools
 
