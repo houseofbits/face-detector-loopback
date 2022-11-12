@@ -84,5 +84,7 @@ cv::Mat getFirstFaceImage(cv::Mat &frame, vector<cv::Rect2d> &faces)
         return imgResized;
     }
 
-    return frame;
+    cv::resize(frame, imgResized, {320,240});
+
+    return imgResized;
 }
