@@ -3,3 +3,6 @@ CMakeFiles
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+test/package-lock.json
+test/node_modules
+test/.idea

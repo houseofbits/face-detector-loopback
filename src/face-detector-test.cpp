@@ -57,7 +57,7 @@ int main(int argc, char **argv)
         }
 
         double seconds = (double(end) - double(start)) / double(CLOCKS_PER_SEC);
-        fps = 1.0d / double(seconds);
+        fps = 1.0 / double(seconds);
 
         putText(frame, "FPS: " + to_string(int(fps)), {10, 20}, FONT_HERSHEY_SIMPLEX, 0.7, {255, 0, 0}, 2);
         imshow("Display Image", frame);

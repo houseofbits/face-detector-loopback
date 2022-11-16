@@ -33,7 +33,7 @@ public:
     {
         frameWidth = 640;
         frameHeight = 480;
-        frameFormat = V4L2_PIX_FMT_YVU420;
+        frameFormat = V4L2_PIX_FMT_YUV420;
     }
 
     void setSize(int width, int height)
@@ -111,7 +111,7 @@ public:
     {
         cv::Mat converted;
 
-        cv::cvtColor(image, converted, cv::COLOR_RGBA2YUV_I420);
+        cv::cvtColor(image, converted, cv::COLOR_BGRA2YUV_I420);
 
         if (image.size().width > frameWidth || image.size().height > frameHeight)
         {
@@ -138,15 +138,21 @@ private:
         switch (format)
         {
         case V4L2_PIX_FMT_YUV420:
+            cout << "V4L2_PIX_FMT_YUV420" << endl;
         case V4L2_PIX_FMT_YVU420:
+            cout << "V4L2_PIX_FMT_YVU420" << endl;
             lw = width; /* ??? */
             fw = ROUND_UP_4(width) * ROUND_UP_2(height);
             fw += 2 * ((ROUND_UP_8(width) / 2) * (ROUND_UP_2(height) / 2));
             break;
         case V4L2_PIX_FMT_UYVY:
+            cout << "V4L2_PIX_FMT_UYVY" << endl;
         case V4L2_PIX_FMT_Y41P:
+            cout << "V4L2_PIX_FMT_Y41P" << endl;
         case V4L2_PIX_FMT_YUYV:
+            cout << "V4L2_PIX_FMT_YUYV" << endl;
         case V4L2_PIX_FMT_YVYU:
+            cout << "V4L2_PIX_FMT_YVYU" << endl;
             lw = (ROUND_UP_2(width) * 2);
             fw = lw * height;
             break;

@@ -1,0 +1,87 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "2.8.12"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "OpenCVTest",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "FaceDetectorLoopback::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-FaceDetectorLoopback-Debug-8c0cffa3552a6b0e2e68.json",
+					"name" : "FaceDetectorLoopback",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "FaceTest::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-FaceTest-Debug-d481d48c0e1a22ed30ef.json",
+					"name" : "FaceTest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "LoopbackCameraTest::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-LoopbackCameraTest-Debug-2f66ea21d2edc5883d36.json",
+					"name" : "LoopbackCameraTest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "OpenCVTest::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-OpenCVTest-Debug-27f419505916e0b296dd.json",
+					"name" : "OpenCVTest",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/krists/Documents/git/face-detector-loopback/build",
+		"source" : "/home/krists/Documents/git/face-detector-loopback"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

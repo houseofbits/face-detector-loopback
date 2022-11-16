@@ -1,0 +1,22 @@
+[
+{
+  "directory": "/home/krists/Documents/git/face-detector-loopback/build",
+  "command": "/usr/bin/c++  -isystem /usr/local/include/opencv4 -g -o CMakeFiles/OpenCVTest.dir/src/opencv-test.cpp.o -c /home/krists/Documents/git/face-detector-loopback/src/opencv-test.cpp",
+  "file": "/home/krists/Documents/git/face-detector-loopback/src/opencv-test.cpp"
+},
+{
+  "directory": "/home/krists/Documents/git/face-detector-loopback/build",
+  "command": "/usr/bin/c++  -isystem /usr/local/include/opencv4 -g -o CMakeFiles/FaceTest.dir/src/face-detector-test.cpp.o -c /home/krists/Documents/git/face-detector-loopback/src/face-detector-test.cpp",
+  "file": "/home/krists/Documents/git/face-detector-loopback/src/face-detector-test.cpp"
+},
+{
+  "directory": "/home/krists/Documents/git/face-detector-loopback/build",
+  "command": "/usr/bin/c++  -isystem /usr/local/include/opencv4 -g -o CMakeFiles/LoopbackCameraTest.dir/src/loopback-camera-test.cpp.o -c /home/krists/Documents/git/face-detector-loopback/src/loopback-camera-test.cpp",
+  "file": "/home/krists/Documents/git/face-detector-loopback/src/loopback-camera-test.cpp"
+},
+{
+  "directory": "/home/krists/Documents/git/face-detector-loopback/build",
+  "command": "/usr/bin/c++  -isystem /usr/local/include/opencv4 -g -o CMakeFiles/FaceDetectorLoopback.dir/src/face-detector-loopback.cpp.o -c /home/krists/Documents/git/face-detector-loopback/src/face-detector-loopback.cpp",
+  "file": "/home/krists/Documents/git/face-detector-loopback/src/face-detector-loopback.cpp"
+}
+]
