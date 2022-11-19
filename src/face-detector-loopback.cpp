@@ -6,11 +6,11 @@
 #include "FaceDetector.hpp"
 #include "CaffeFaceDetector.hpp"
 #include "OutputVideoDevice.hpp"
+#include "DetectionResultInterpolator.hpp"
 
 using namespace std;
 
-void drawDetectedFaces(cv::Mat &frame, vector<cv::Rect2d> &faces);
-cv::Mat getFirstFaceImage(cv::Mat &frame, vector<cv::Rect2d> &faces);
+cv::Mat getImageFromRect(cv::Mat &frame, cv::Rect2d rect);
 
 int main(int argc, char **argv)
 {
@@ -18,9 +18,11 @@ int main(int argc, char **argv)
     CaptureDevice captureDevice;
     CaffeFaceDetector caffeDetector;
     OutputVideoDevice outputVideoDevice;
-
+    DetectionResultInterpolator detectionResultInterpolator;
     vector<cv::Rect2d> faces;
     cv::Mat faceImg;
+    clock_t start;
+    clock_t end;
 
     configReader.read("config.conf");
 
@@ -43,15 +45,25 @@ int main(int argc, char **argv)
 
         try
         {
+            end = clock();
+
+            double frameTime = (double(end) - double(start)) / double(CLOCKS_PER_SEC);
+
+            frameTime = fmax(0.1, frameTime);
+
             cv::Mat frame = captureDevice.getFrame();
 
             faces = caffeDetector.detect(frame);
 
-            faceImg = getFirstFaceImage(frame, faces);
+            cv::Rect2d rect = detectionResultInterpolator.getInterpolatedResult(faces, frameTime);
 
+            faceImg = getImageFromRect(frame, rect);
+            
             cv::imshow("Display Image", faceImg);
 
             outputVideoDevice.writeOpenCVImage(faceImg);
+
+            start = clock();
         }
         catch (cv::Exception e)
         {
@@ -65,73 +77,65 @@ int main(int argc, char **argv)
     return 0;
 }
 
-cv::Mat getFirstFaceImage(cv::Mat &frame, vector<cv::Rect2d> &faces)
+cv::Mat getImageFromRect(cv::Mat &frame, cv::Rect2d rect)
 {
     cv::Mat faceImg, imgResized;
+    cv::Rect r;
     int offset = 0;
-    float expandBy = 0.1;
+    float expandBy = 0.2;
     float fixedAspectRatio = 1.4;
     float frameWidth = frame.size().width;
     float frameHeight = frame.size().height;
-    
-    for (size_t i = 0; i < faces.size(); i++)
-    {   
-        if (faces[i].x > 1.0 || faces[i].y > 1.0) {
-            continue;
-        }
 
-        cv::Rect r;
-        r.x = int(frameWidth * faces[i].x);
-        r.y = int(frameHeight * faces[i].y);
-        r.width = int(frameWidth * faces[i].width);
-        r.height = int(frameHeight * faces[i].height);
+    r.x = int(frameWidth * rect.x);
+    r.y = int(frameHeight * rect.y);
+    r.width = int(frameWidth * rect.width);
+    r.height = int(frameHeight * rect.height);
+    float expand = (float)r.width * expandBy;
 
-        float expand = (float)r.width * expandBy;
+    r.x = r.x - expand;
+    r.y = r.y - expand;
+    r.width = r.width + expand * 2;
+    r.height = r.height + expand * 2;
 
-        r.x = r.x - expand;
-        r.y = r.y - expand;
-        r.width = r.width + expand * 2;
-        r.height = r.height + expand * 2;
+    float newWidth = r.height / fixedAspectRatio;
 
-        float newWidth = r.height / fixedAspectRatio;
+    r.x = r.x + ((r.width - newWidth) / 2);
+    r.width = newWidth;
 
-        r.x = r.x + ((r.width - newWidth)/2);
-        r.width = newWidth;
-
-        float offsetex = 0;
-        if (r.x + r.width > frameWidth) {
-            offsetex = fabs(frameWidth - (r.x + r.width));
-            r.width = frameWidth - r.x;
-        }
-        float offsetey = 0;
-        if (r.y + r.height > frameHeight) {
-            offsetey = fabs(frameHeight - (r.y + r.height));
-            r.height = frameHeight - r.y;
-        }
-        float offsetsx = 0;
-        if (r.x < 0) {
-            offsetsx = fabs(r.x);
-            r.x = 0;
-        }
-        float offsetsy = 0;
-        if (r.y < 0) {
-            offsetsy = fabs(r.y);
-            r.y = 0;
-        }      
-
-        faceImg = frame(r);
-
-        cv::Mat largerImage = cv::Mat::zeros(cv::Size(offsetsx + r.width + offsetex, offsetsy + r.height + offsetey),frame.type());
-        cv::Rect rFace({(int)offsetsx, (int)offsetsy}, faceImg.size());
-
-        faceImg.copyTo(largerImage(rFace));
-
-        cv::resize(largerImage, imgResized, {320,240});
-
-        return imgResized;
+    float offsetex = 0;
+    if (r.x + r.width > frameWidth)
+    {
+        offsetex = fabs(frameWidth - (r.x + r.width));
+        r.width = frameWidth - r.x;
+    }
+    float offsetey = 0;
+    if (r.y + r.height > frameHeight)
+    {
+        offsetey = fabs(frameHeight - (r.y + r.height));
+        r.height = frameHeight - r.y;
+    }
+    float offsetsx = 0;
+    if (r.x < 0)
+    {
+        offsetsx = fabs(r.x);
+        r.x = 0;
+    }
+    float offsetsy = 0;
+    if (r.y < 0)
+    {
+        offsetsy = fabs(r.y);
+        r.y = 0;
     }
 
-    cv::resize(frame, imgResized, {320,240});
+    faceImg = frame(r);
+
+    cv::Mat largerImage = cv::Mat::zeros(cv::Size(offsetsx + r.width + offsetex, offsetsy + r.height + offsetey), frame.type());
+    cv::Rect rFace({(int)offsetsx, (int)offsetsy}, faceImg.size());
+
+    faceImg.copyTo(largerImage(rFace));
+
+    cv::resize(largerImage, imgResized, {320, 240});
 
     return imgResized;
 }

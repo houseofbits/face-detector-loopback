@@ -80,6 +80,20 @@ After=dev-video21.device
 ...
 ```
 
+
+Install OpenCV libs
+> `sudo pacman -S opencv`
+> `sudo pacman -S qt5-base`
+
+Install v4l2loopback
+> `sudo pacman -Syu dkms base-devel --needed` ??
+
+> `sudo pacman -S linux linux-headers`
+
+> `sudo pacman -S v4l2loopback-dkms`
+
+> `sudo pacman -S v4l2loopback-utils`
+
 ## Useful tools
 
 > `v4l2-ctl --list-devices` 
