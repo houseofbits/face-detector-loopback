@@ -38,12 +38,6 @@ https://github.com/umlaeute/v4l2loopback
 ...
 
 
-> `sudo modprobe -r v4l2loopback`
-
-> `sudo modprobe v4l2loopback devices=1 video_nr=21 exclusive_caps=1 card_label="Virtual Webcam"`
-
-Note: To open this media device in browser it has to have data streamed to it.
-
 ## 3. Compile
 
 Create build files
@@ -60,10 +54,23 @@ Executables
 * **LoopbackCameraTest** - Test to feed captured video data into the virtual video device
 * **FaceDetectorLoopback** - Full face detection with streaming to loopback device
 
-## 4. System configuration (Arch)
+## 4. Example system configuration for Arch Linux based deployment
 
-1. Create a service to run `./FaceDetectorLoopback` and restart on failure
-2. Make sure that it depends on availablity of `/dev/video21`
+### 1. Install dependencies (OpenCV, v4l2loopback)
+
+> `sudo pacman -S opencv qt5-base`
+
+> `sudo pacman -S linux linux-headers v4l2loopback-dkms v4l2loopback-utils`
+
+### 2. Create virtual device
+> `sudo modprobe v4l2loopback devices=1 video_nr=21 exclusive_caps=1 card_label="Virtual Webcam"`
+
+Remove device, if necessary
+> `sudo modprobe -r v4l2loopback`
+
+### 3. Create a systemd service to run `./FaceDetectorLoopback` and restart on failure
+
+### 4. Make sure that the service depends on availablity of virtual video device
  
 > `sudo nano /etc/udev/rules.d/98-virtual-video.rules`
 
@@ -71,7 +78,7 @@ add
 
     KERNEL=="video21", SYMLINK="video21", TAG+="systemd"
 
-Service
+Update service to depend on the device
 
 ```
 [Unit]
@@ -80,19 +87,12 @@ After=dev-video21.device
 ...
 ```
 
+### 5. Use case
 
-Install OpenCV libs
-> `sudo pacman -S opencv`
-> `sudo pacman -S qt5-base`
 
-Install v4l2loopback
-> `sudo pacman -Syu dkms base-devel --needed` ??
+> /test/
 
-> `sudo pacman -S linux linux-headers`
 
-> `sudo pacman -S v4l2loopback-dkms`
-
-> `sudo pacman -S v4l2loopback-utils`
 
 ## Useful tools
 
@@ -101,7 +101,7 @@ Install v4l2loopback
 Comandline webcam playback   
 > `xawtv -c /dev/video21` 
 
-## Links for reference 
+## 6. Reference 
  * https://www.scs.stanford.edu/~dm/blog/hide-webcam.html
  * https://stackoverflow.com/questions/68433415/using-v4l2loopback-virtual-cam-with-google-chrome-or-chromium-on-linux-while-hav
  * https://github.com/umlaeute/v4l2loopback/issues/274
