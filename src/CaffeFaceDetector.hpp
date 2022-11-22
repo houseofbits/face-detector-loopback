@@ -2,6 +2,7 @@
 #include <opencv2/dnn.hpp>
 #include <opencv2/imgproc.hpp>
 #include <stdio.h>
+#include "Exception.hpp"
 
 /**
  * Kudos for the dnn model to:

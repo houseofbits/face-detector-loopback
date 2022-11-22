@@ -1,5 +1,6 @@
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
+#include "Exception.hpp"
 
 class CaptureDevice
 {

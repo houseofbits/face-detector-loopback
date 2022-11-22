@@ -8,6 +8,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <assert.h>
+#include "Exception.hpp"
 
 #define ROUND_UP_2(num) (((num) + 1) & ~1)
 #define ROUND_UP_4(num) (((num) + 3) & ~3)
