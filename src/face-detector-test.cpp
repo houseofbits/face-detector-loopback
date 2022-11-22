@@ -1,6 +1,7 @@
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
 #include <time.h>
+#include "Exception.hpp"
 #include "ConfigReader.hpp"
 #include "CaptureDevice.hpp"
 #include "FaceDetector.hpp"
@@ -38,9 +39,11 @@ int main(int argc, char **argv)
         configReader.getStringValue("caffePrototxtFilename"),
         configReader.getStringValue("caffeModelFilename"));
 
-    while (captureDevice.captureFrame())
+    while (true)
     {
         end = clock();
+
+        captureDevice.captureFrame();
 
         Mat frame = captureDevice.getFrame();
 

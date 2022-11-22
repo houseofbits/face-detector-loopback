@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 /**
- * Cudos for the dnn model to:
+ * Kudos for the dnn model to:
  * https://www.youtube.com/watch?v=piaEXzNkowY&t=974s
 */
 class CaffeFaceDetector
@@ -18,9 +18,7 @@ public:
         net = cv::dnn::readNetFromCaffe(protoFileName.c_str(), caffemodelFileName.c_str());
         if (net.empty())
         {
-            std::cerr << "Can't load network by using the following files: " << std::endl;
-            std::cerr << "prototxt:   " << protoFileName << std::endl;
-            std::cerr << "caffemodel: " << caffemodelFileName << std::endl;
+            throw new Exception("Can't load face detector models");
         }
     }
 

@@ -87,11 +87,9 @@ After=dev-video21.device
 ...
 ```
 
-### 5. Use case
-
+### 5. Example of front-end application
 
 > /test/
-
 
 
 ## Useful tools

@@ -1,6 +1,7 @@
 #include <opencv2/opencv.hpp>
 #include <stdio.h>
 #include <time.h>
+#include "Exception.hpp"
 #include "ConfigReader.hpp"
 #include "CaptureDevice.hpp"
 #include "FaceDetector.hpp"
@@ -10,80 +11,106 @@
 
 using namespace std;
 
-cv::Mat getImageFromRect(cv::Mat &frame, cv::Rect2d rect);
+cv::Mat getImageFromRect(cv::Mat &frame, cv::Rect2d rect, cv::Size2f outputSize, float fixedAspectRatio, float expandBy);
 
 int main(int argc, char **argv)
 {
-    ConfigReader configReader;
-    CaptureDevice captureDevice;
-    CaffeFaceDetector caffeDetector;
-    OutputVideoDevice outputVideoDevice;
-    DetectionResultInterpolator detectionResultInterpolator;
-    vector<cv::Rect2d> faces;
-    cv::Mat faceImg;
-    clock_t start;
-    clock_t end;
-
-    configReader.read("config.conf");
-
-    captureDevice.open(configReader.getIntValue("openCVCameraIndex", 0));
-
-    outputVideoDevice.setSize(320, 240);
-    outputVideoDevice.open(configReader.getStringValue("loopbackDevide", ""));
-
-    caffeDetector.load(
-        configReader.getStringValue("caffePrototxtFilename"),
-        configReader.getStringValue("caffeModelFilename"));
-
-    while (captureDevice.captureFrame())
+    try
     {
-        char c = (char)cv::waitKey(10);
-        if (c == 27 || c == 'q' || c == 'Q')
+        ConfigReader configReader;
+        CaptureDevice captureDevice;
+        CaffeFaceDetector caffeDetector;
+        OutputVideoDevice outputVideoDevice;
+        DetectionResultInterpolator detectionResultInterpolator;
+        vector<cv::Rect2d> faces;
+        cv::Mat faceImg;
+        clock_t start;
+        clock_t end;
+
+        configReader.read("config.conf");
+
+        cout << "Configuration file loaded" << endl;
+
+        captureDevice.open(configReader.getIntValue("openCVCameraIndex", 0));
+
+        cout << "Video capture device opened" << endl;
+
+        outputVideoDevice.setSize(320, 240);
+        outputVideoDevice.open(configReader.getStringValue("loopbackDevide", ""));
+
+        cout << "Loopback device opened" << endl;
+
+        caffeDetector.load(
+            configReader.getStringValue("caffePrototxtFilename"),
+            configReader.getStringValue("caffeModelFilename"));
+
+        cout << "Caffe face detector models loaded" << endl;
+
+        cv::Size2f outputSize = configReader.getSizeValue("outputSize", {320, 240});
+        float fixedAspectRatio = configReader.getFloatValue("fixedAspectRatio", 1.4);
+        float expandBy = configReader.getFloatValue("expandBy", 0.2);
+        bool shouldShowWindow = configReader.getBoolValue("shouldShowWindow", true);
+
+        cout << "Settings loaded" << endl;
+
+        cout << "Running" << endl;
+
+        while (true)
         {
-            break;
-        }
+            char c = (char)cv::waitKey(10);
+            if (c == 27 || c == 'q' || c == 'Q')
+            {
+                break;
+            }
 
-        try
-        {
-            end = clock();
+            try
+            {
+                end = clock();
 
-            double frameTime = (double(end) - double(start)) / double(CLOCKS_PER_SEC);
+                captureDevice.captureFrame();
 
-            frameTime = fmax(0.1, frameTime);
+                double frameTime = (double(end) - double(start)) / double(CLOCKS_PER_SEC);
 
-            cv::Mat frame = captureDevice.getFrame();
+                frameTime = fmax(0.1, frameTime);
 
-            faces = caffeDetector.detect(frame);
+                cv::Mat frame = captureDevice.getFrame();
 
-            cv::Rect2d rect = detectionResultInterpolator.getInterpolatedResult(faces, frameTime);
+                faces = caffeDetector.detect(frame);
 
-            faceImg = getImageFromRect(frame, rect);
-            
-            cv::imshow("Display Image", faceImg);
+                cv::Rect2d rect = detectionResultInterpolator.getInterpolatedResult(faces, frameTime);
 
-            outputVideoDevice.writeOpenCVImage(faceImg);
+                faceImg = getImageFromRect(frame, rect, outputSize, fixedAspectRatio, expandBy);
 
-            start = clock();
-        }
-        catch (cv::Exception e)
-        {
+                if (shouldShowWindow)
+                {
+                    cv::imshow("Display Image", faceImg);
+                }
 
-            cout << "Exception: " << e.msg << endl;
+                outputVideoDevice.writeOpenCVImage(faceImg);
 
-            continue;
+                start = clock();
+            }
+            catch (cv::Exception e)
+            {
+
+                cout << "Exception: " << e.msg << endl;
+
+                continue;
+            }
         }
     }
-
+    catch (Exception e)
+    {
+        cout << "Fatal exception: " << e.getMessage() << endl;
+    }
     return 0;
 }
 
-cv::Mat getImageFromRect(cv::Mat &frame, cv::Rect2d rect)
+cv::Mat getImageFromRect(cv::Mat &frame, cv::Rect2d rect, cv::Size2f outputSize, float fixedAspectRatio, float expandBy)
 {
     cv::Mat faceImg, imgResized;
     cv::Rect r;
     int offset = 0;
-    float expandBy = 0.2;
-    float fixedAspectRatio = 1.4;
     float frameWidth = frame.size().width;
     float frameHeight = frame.size().height;
 
@@ -135,7 +162,7 @@ cv::Mat getImageFromRect(cv::Mat &frame, cv::Rect2d rect)
 
     faceImg.copyTo(largerImage(rFace));
 
-    cv::resize(largerImage, imgResized, {320, 240});
+    cv::resize(largerImage, imgResized, outputSize);
 
     return imgResized;
 }

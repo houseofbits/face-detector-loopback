@@ -13,20 +13,18 @@ public:
         capture.open(cameraIndex);
         if (!capture.isOpened())
         {
-            printf("Could not open capture device: %d\n", cameraIndex);
+            throw new Exception("Could not open capture device" + cameraIndex);
         }
     }
 
-    bool captureFrame()
+    void captureFrame()
     {
         capture >> frame;
 
         if (frame.empty())
         {
-            return false;
+            throw new Exception("Captured frame is empty");
         }
-
-        return true;
     }
 
     cv::Mat getFrame()
