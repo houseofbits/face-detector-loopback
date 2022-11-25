@@ -50,6 +50,8 @@ int main(int argc, char **argv)
         float fixedAspectRatio = configReader.getFloatValue("fixedAspectRatio", 1.4);
         float expandBy = configReader.getFloatValue("expandBy", 0.2);
         bool shouldShowWindow = configReader.getBoolValue("shouldShowWindow", true);
+        int inputRotate = configReader.getIntValue("inputRotate", 0);
+        int inputFlip = configReader.getIntValue("inputFlip", 0);
 
         cout << "Settings loaded" << endl;
 
@@ -73,7 +75,7 @@ int main(int argc, char **argv)
 
                 frameTime = fmax(0.1, frameTime);
 
-                cv::Mat frame = captureDevice.getFrame();
+                cv::Mat frame = captureDevice.getFrame(inputRotate, inputFlip);
 
                 faces = caffeDetector.detect(frame);
 

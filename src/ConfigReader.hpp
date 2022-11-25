@@ -15,7 +15,10 @@ public:
         ifstream input(filename);
 
         for (string line; getline(input, line);)
-        {
+        {   
+            if (line.c_str()[0] == '#') {
+                continue;
+            }
             vector<string> keyValuePair = split(line, ':');
             if (keyValuePair.size() == 2)
             {
