@@ -11,7 +11,7 @@
 
 using namespace std;
 
-cv::Mat getImageFromRect(cv::Mat &frame, cv::Rect2d rect, cv::Size2f outputSize, float fixedAspectRatio, float expandBy);
+cv::Mat getImageFromRect(cv::Mat &frame, cv::Rect2d rect, cv::Size2f outputSize, float fixedAspectRatio, cv::Size2f expandX, cv::Size2f expandY);
 
 int main(int argc, char **argv)
 {
@@ -28,6 +28,7 @@ int main(int argc, char **argv)
         clock_t end;
 
         configReader.read("config.conf");
+        cv::Size2f outputSize = configReader.getSizeValue("outputSize", {320, 240});
 
         cout << "Configuration file loaded" << endl;
 
@@ -35,7 +36,7 @@ int main(int argc, char **argv)
 
         cout << "Video capture device opened" << endl;
 
-        outputVideoDevice.setSize(320, 240);
+        outputVideoDevice.setSize(outputSize.width, outputSize.height);
         outputVideoDevice.open(configReader.getStringValue("loopbackDevide", ""));
 
         cout << "Loopback device opened" << endl;
@@ -46,9 +47,9 @@ int main(int argc, char **argv)
 
         cout << "Caffe face detector models loaded" << endl;
 
-        cv::Size2f outputSize = configReader.getSizeValue("outputSize", {320, 240});
         float fixedAspectRatio = configReader.getFloatValue("fixedAspectRatio", 1.4);
-        float expandBy = configReader.getFloatValue("expandBy", 0.2);
+        cv::Size2f expandX = configReader.getSizeValue("expandX", {0.4, 0.4});
+        cv::Size2f expandY = configReader.getSizeValue("expandY", {0.1, 0.8});
         bool shouldShowWindow = configReader.getBoolValue("shouldShowWindow", true);
         int inputRotate = configReader.getIntValue("inputRotate", 0);
         int inputFlip = configReader.getIntValue("inputFlip", 0);
@@ -81,7 +82,7 @@ int main(int argc, char **argv)
 
                 cv::Rect2d rect = detectionResultInterpolator.getInterpolatedResult(faces, frameTime);
 
-                faceImg = getImageFromRect(frame, rect, outputSize, fixedAspectRatio, expandBy);
+                faceImg = getImageFromRect(frame, rect, outputSize, fixedAspectRatio, expandX, expandY);
 
                 if (shouldShowWindow)
                 {
@@ -108,7 +109,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
-cv::Mat getImageFromRect(cv::Mat &frame, cv::Rect2d rect, cv::Size2f outputSize, float fixedAspectRatio, float expandBy)
+cv::Mat getImageFromRect(cv::Mat &frame, cv::Rect2d rect, cv::Size2f outputSize, float fixedAspectRatio, cv::Size2f expandX, cv::Size2f expandY)
 {
     cv::Mat faceImg, imgResized;
     cv::Rect r;
@@ -120,12 +121,15 @@ cv::Mat getImageFromRect(cv::Mat &frame, cv::Rect2d rect, cv::Size2f outputSize,
     r.y = int(frameHeight * rect.y);
     r.width = int(frameWidth * rect.width);
     r.height = int(frameHeight * rect.height);
-    float expand = (float)r.width * expandBy;
+    float expandX1 = (float)r.width * expandX.width;
+    float expandX2 = (float)r.width * expandX.height;
+    float expandY1 = (float)r.height * expandY.width;
+    float expandY2 = (float)r.height * expandY.height;
 
-    r.x = r.x - expand;
-    r.y = r.y - expand;
-    r.width = r.width + expand * 2;
-    r.height = r.height + expand * 2;
+    r.x = r.x - expandX1;
+    r.y = r.y - expandY1;
+    r.width = r.width + (expandX1 + expandX2);
+    r.height = r.height + (expandY1 + expandY2);
 
     float newWidth = r.height / fixedAspectRatio;
 
