@@ -33,9 +33,39 @@ For reference: https://www.geeksforgeeks.org/how-to-install-opencv-in-c-on-linux
 
 ## 2. Install v4l2loopback
 
-https://github.com/umlaeute/v4l2loopback
+Install `linux linux-headers v4l2loopback-dkms v4l2loopback-utils` packages
 
-...
+Load module at boot
+
+> `/etc/modules-load.d/v4l2loopback.conf`
+
+add 
+    
+    v4l2loopback
+
+> `/etc/modprobe.d/v4l2loopback.conf`
+
+add
+
+    options v4l2loopback video_nr=21
+    options v4l2loopback card_label="Virtual Webcam"   
+    options v4l2loopback exclusive_caps=1
+
+> `sudo mkinitcpio -P`    
+
+
+
+v4l2-ctl -d /dev/video21 --list-formats-ext
+
+v4l2loopback-ctl set-caps /dev/video21 "YU12:640x480"
+
+sudo rmmod v4l2loopback
+
+v4l2-ctl -d /dev/video0 -c timeout=3000
+
+v4l2loopback-ctl set-timeout-image -t 3000 /dev/video0 service-unavailable.png
+
+For reference: https://github.com/umlaeute/v4l2loopback
 
 
 ## 3. Compile
